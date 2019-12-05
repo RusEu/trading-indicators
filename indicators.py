@@ -42,6 +42,10 @@ def trend(high, low, close, factor=3, pd=14):
     return Trend
 
 def mmar(close):
+    import numpy as np
+    import pandas as pd
+    import talib as ta
+
     df = pd.DataFrame.from_dict(dict(
         ma05 = ta.EMA(close, 5),
         ma10 = ta.EMA(close, 10),
@@ -84,4 +88,39 @@ def mmar(close):
             ma80_c = maColor(df['ma80'], df['ma80'].shift(1)),
             ma90_c = maColor(df['ma90'], df['ma90'].shift(1))  
         )
+    )
+    
+def fibonacci_bands(high, low, close, volume, mult=3.0, period=200):
+    hlc3 = (high + low + close) / 3
+    dev = mult * hlc3.rolling(period).std()
+    basis = vwma(hlc3, volume, period)
+    
+    upper_1 = basis + (0.236 * dev)
+    upper_2 = basis + (0.382 * dev)
+    upper_3 = basis + (0.5 * dev)
+    upper_4 = basis + (0.618 * dev)
+    upper_5 = basis + (0.764 * dev)
+    upper_6 = basis + (1 * dev)
+    lower_1 = basis - (0.236 * dev)
+    lower_2 = basis - (0.382 * dev)
+    lower_3 = basis - (0.5 * dev)
+    lower_4 = basis - (0.618 * dev)
+    lower_5 = basis - (0.764 * dev)
+    lower_6 = basis - (1 * dev)
+    upper_basis = upper_6 - basis
+    
+    return dict(
+        upper_1=upper_1,
+        upper_2=upper_2,
+        upper_3=upper_3,
+        upper_4=upper_4,
+        upper_5=upper_5,
+        upper_6=upper_6,
+        lower_1=lower_1,
+        lower_2=lower_2,
+        lower_3=lower_3,
+        lower_4=lower_4,
+        lower_5=lower_5,
+        lower_6=lower_6,
+        upper_basis=upper_basis
     )
